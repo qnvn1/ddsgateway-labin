@@ -18,15 +18,19 @@ trait ConsumesExternalService
      */
     public function performRequest($method, $requestUrl, $form_params = [], $headers = [])
     {
-    $client = new Client(['base_uri' => $this->baseUri]);
-
-    $response = $client->request($method, $requestUrl, [
-        'form_params' => $form_params,
-        'headers' => $headers,
-    ]);
-
-    // Decode JSON before returning
-    return json_decode($response->getBody()->getContents(), true);
-}
+        $client = new Client(['base_uri' => $this->baseUri]);
+    
+        $headers = array_merge($headers, [
+            'Authorization' => $this->secret, // 👈 this line adds your secret to every request
+        ]);
+    
+        $response = $client->request($method, $requestUrl, [
+            'form_params' => $form_params,
+            'headers' => $headers,
+        ]);
+    
+        return json_decode($response->getBody()->getContents(), true);
+    }
+    
 
 }
